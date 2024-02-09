@@ -1,0 +1,22 @@
+# .gitlab-ci.yml
+
+# Define stages for the pipeline
+stages:
+  - validate
+
+# Define the job for code validation
+validate_code:
+  stage: validate
+  script:
+    - git fetch origin master # Fetch the latest changes from the master branch
+    - git diff --name-only origin/master # Get a list of files changed compared to master branch
+    # Example script to check for any conflicts or duplicates
+    - |
+      changed_files=$(git diff --name-only origin/master)
+      for file in $changed_files; do
+        if grep -q "your_existing_code" $file; then
+          echo "Error: Existing code found in file: $file"
+          exit 1 # Exit with non-zero status to indicate failure
+        fi
+      done
+    - echo "Code validation successful"
